@@ -14,8 +14,20 @@ seed = 1
 requested_services = assign_requests_to_services(srv_obj, req_obj, seed)
 
 model_obj = CPLEX(net_obj, req_obj, srv_obj, requested_services, requests_entry_nodes)
-action = {"req_id": 1, "node": 8}
-action = {}
 
-model_obj.solve(action)
+optimum_value = model_obj.solve({})
+action = {"req_id": 1, "node": 8}
+action_value = model_obj.solve(action)
+
+if optimum_value == -1 or action_value == -1:
+    reward = 0
+else:
+    reward = (1 - ((action_value - optimum_value) / action_value)) * 10000
+
+print(int(reward))
+
+
+
+
+
 

@@ -206,9 +206,9 @@ class CPLEX:
         #print(solution)
 
         try:
-            print(solution.get_objective_value())
+            return(solution.get_objective_value())
         except:
-            print("no solution is available!")
+            return -1
 """
 
 
@@ -222,6 +222,8 @@ class CPLEX:
         self.requests_entry_nodes = requests_entry_nodes
 
     def solve(self, action):
-        print("17745.409")
-
+        if len(action) != 0:
+            return 18845.409
+        else:
+            return 17745.409
 
