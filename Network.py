@@ -1,6 +1,4 @@
-import random
 import math
-import matplotlib.pyplot as plt
 import numpy as np
 
 rnd = np.random

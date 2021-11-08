@@ -1,4 +1,3 @@
-"""
 from docplex.mp.model import Model
 
 
@@ -209,8 +208,9 @@ class CPLEX:
             print(solution.get_objective_value())
         except:
             print("no solution is available!")
-"""
 
+
+"""
 class CPLEX:
 
     def __init__(self, net_obj, req_obj, srv_obj, requested_services, requests_entry_nodes):
@@ -222,4 +222,5 @@ class CPLEX:
 
     def solve(self, action):
         print("17745.409")
+"""
 
