@@ -1,7 +1,7 @@
 from Network import Network
 from Request import Request
 from Service import Service
-from Functions import specify_requests_entry_nodes, assign_requests_to_services, solver
+from Functions import specify_requests_entry_nodes, assign_requests_to_services
 from CPLEX import CPLEX
 
 seed = 4

@@ -1,5 +1,6 @@
-from docplex.mp.model import Model
+# from docplex.mp.model import Model
 import numpy as np
+
 rnd = np.random
 
 
@@ -13,6 +14,7 @@ def assign_requests_to_services(srv_obj, req_obj, seed):
     return np.array([rnd.choice(srv_obj.SERVICES) for i in req_obj.REQUESTS])
 
 
+"""
 def solver(net_obj, req_obj, srv_obj, requested_services, requests_entry_nodes):
     M = 10 ** 6
     OF_WEIGHTS = [1, 100, 1, 1]
@@ -177,3 +179,4 @@ def solver(net_obj, req_obj, srv_obj, requested_services, requests_entry_nodes):
         print(solution.get_objective_value())
     except:
         print("no solution is available!")
+"""
