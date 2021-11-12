@@ -14,6 +14,17 @@ def assign_requests_to_services(srv_obj, req_obj, seed):
     return np.array([rnd.choice(srv_obj.SERVICES) for i in req_obj.REQUESTS])
 
 
+def parse_state(state, NUM_NODES, NUM_REQUESTS, NUM_SERVICES, env_obj):
+
+    print("selected request array:")
+    print(state[0:NUM_REQUESTS].astype(int))
+
+
+
+
+    print(state)
+
+
 """
 def solver(net_obj, req_obj, srv_obj, requested_services, requests_entry_nodes):
     M = 10 ** 6

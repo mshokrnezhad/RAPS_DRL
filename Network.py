@@ -234,6 +234,10 @@ class Network:
 
         return link_delays_dict, link_delays_matrix
 
+    def get_first_tier_nodes(self):
+
+        return np.array([i for i in self.NODES if self.get_tier_num(i) == 0])
+
     def get_state(self):
 
         arr1 = np.concatenate((self.DC_CAPACITIES, self.DC_COSTS))
@@ -243,6 +247,21 @@ class Network:
 
         return arr4
 
-    def get_first_tier_nodes(self):
+    def update_state(self, action, result, req_obj):
 
-        return np.array([i for i in self.NODES if self.get_tier_num(i) == 0])
+        req_id = np.where(req_obj.REQUESTS == action["req_id"])[0][0]
+        node_id = action["node_id"]
+        priority_level = result["p"][req_id]
+
+        self.DC_CAPACITIES[node_id] -= req_obj.CAPACITY_REQUIREMENTS[req_id]
+        for (i, j) in result["req_flw"][req_id]:
+            self.LINK_BWS_DICT[(i, j)] -= req_obj.BW_REQUIREMENTS[req_id]
+            self.LINK_BWS_MATRIX[i, j] -= req_obj.BW_REQUIREMENTS[req_id]
+        for (i, j) in result["res_flw"][req_id]:
+            self.LINK_BWS_DICT[(i, j)] -= req_obj.BW_REQUIREMENTS[req_id]
+            self.LINK_BWS_MATRIX[i, j] -= req_obj.BW_REQUIREMENTS[req_id]
+        self.BURST_SIZE_LIMIT_PER_PRIORITY[priority_level] -= req_obj.BURST_SIZES[req_id]
+        self.LINK_BWS_LIMIT_PER_PRIORITY = self.compute_link_bws_limit_per_priority()
+        self.BURST_SIZE_CUM_LIMIT_PER_PRIORITY = self.compute_burst_size_cum_limit_per_priority()
+        self.LINK_BWS_CUM_LIMIT_PER_PRIORITY = self.compute_link_bws_cum_limit_per_priority()
+        self.LINK_DELAYS_DICT, self.LINK_DELAYS_MATRIX = self.initialize_link_delays()
