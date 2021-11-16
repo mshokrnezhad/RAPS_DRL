@@ -26,8 +26,8 @@ class DNN(nn.Module):
 
     def save_checkpoint(self):
         print('Saving checkpoint...')
-        T.save(self.state_dict(), self.checkpoint_file)
+        T.save(self.state_dict(), self.CHECKPOINT_FILE)
 
     def load_checkpoint(self):
         print('Loading checkpoint ...')
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.CHECKPOINT_FILE))

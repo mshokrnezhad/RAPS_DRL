@@ -49,14 +49,15 @@ class Request:
         return burst_sizes
 
     def get_state(self):
-        arr1 = np.concatenate((self.CAPACITY_REQUIREMENTS, self.BW_REQUIREMENTS))
-        arr2 = np.concatenate((arr1, self.DELAY_REQUIREMENTS))
-        arr3 = np.concatenate((arr2, self.BURST_SIZES))
+        active_requests = np.array([1 if i in self.REQUESTS else 0 for i in range(self.NUM_REQUESTS)])
+        state = np.concatenate((active_requests, self.CAPACITY_REQUIREMENTS, self.BW_REQUIREMENTS,
+                                self.DELAY_REQUIREMENTS, self.BURST_SIZES))
 
-        return arr3
+        return state
 
     def update_state(self, action):
-        self.REQUESTS = np.delete(self.REQUESTS, action["req_id"])
+        # self.REQUESTS = np.delete(self.REQUESTS, action["req_id"])
+        self.REQUESTS = np.setdiff1d(self.REQUESTS, [action["req_id"]])
         self.CAPACITY_REQUIREMENTS[action["req_id"]] = 0
         self.BW_REQUIREMENTS[action["req_id"]] = 0
         self.DELAY_REQUIREMENTS[action["req_id"]] = 0

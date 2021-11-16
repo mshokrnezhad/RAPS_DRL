@@ -1,6 +1,6 @@
 # from docplex.mp.model import Model
 import numpy as np
-
+import matplotlib.pyplot as plt
 rnd = np.random
 
 
@@ -14,15 +14,86 @@ def assign_requests_to_services(srv_obj, req_obj, seed):
     return np.array([rnd.choice(srv_obj.SERVICES) for i in req_obj.REQUESTS])
 
 
-def parse_state(state, NUM_NODES, NUM_REQUESTS, NUM_SERVICES, env_obj):
+def parse_state(state, NUM_NODES, NUM_REQUESTS, env_obj):
 
-    print("selected request array:")
-    print(state[0:NUM_REQUESTS].astype(int))
+    np.set_printoptions(suppress=True, linewidth=100)
+    counter = 0
+
+    print("\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+
+    print("ACTIVE REQUESTS:")
+    print(state[counter:NUM_REQUESTS].astype(int))
+    counter += NUM_REQUESTS
+
+    print("\nREQUEST CAPACITY REQUIREMENTS:")
+    print(state[counter:counter + NUM_REQUESTS].astype(int))
+    counter += NUM_REQUESTS
+
+    print("\nREQUEST BW REQUIREMENTS:")
+    print(state[counter:counter + NUM_REQUESTS].astype(int))
+    counter += NUM_REQUESTS
+
+    print("\nREQUEST DELAY REQUIREMENTS:")
+    print(state[counter:counter + NUM_REQUESTS].astype(int))
+    counter += NUM_REQUESTS
+
+    print("\nREQUEST BURST SIZES:")
+    print(state[counter:counter + NUM_REQUESTS].astype(int))
+    counter += NUM_REQUESTS
+
+    print("\nDC CAPACITIES:")
+    print(state[counter:counter+NUM_NODES].astype(int))
+    counter += NUM_NODES
+
+    print("\nDC COSTS:")
+    print(state[counter:counter + NUM_NODES].astype(int))
+    counter += NUM_NODES
+
+    print("\nLINK BWS MATRIX:")
+    print(state[counter:counter + NUM_NODES ** 2].astype(int).reshape(NUM_NODES, NUM_NODES))
+    counter += NUM_NODES ** 2
+
+    print("\nLINK COSTS MATRIX:")
+    print(state[counter:counter + NUM_NODES ** 2].astype(int).reshape(NUM_NODES, NUM_NODES))
+    counter += NUM_NODES ** 2
+
+    print("\nLINK DELAYS MATRIX:")
+    link_delays_matrix = state[counter:counter + env_obj.net_obj.NUM_PRIORITY_LEVELS * (NUM_NODES ** 2)].\
+        reshape(env_obj.net_obj.NUM_PRIORITY_LEVELS, NUM_NODES, NUM_NODES)
+    # since we removed null index 0, index 0 of link_delays_matrix is for priority 1 and so on.
+    for n in range(0, env_obj.net_obj.NUM_PRIORITY_LEVELS):
+        print(f"Priority: {n+1}")
+        print(link_delays_matrix[n])
+    counter += env_obj.net_obj.NUM_PRIORITY_LEVELS * (NUM_NODES ** 2)
+
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n")
 
 
+def plot_learning_curve(x, scores, epsilons, filename=""):
+    fig = plt.figure()
+    s_plt1 = fig.add_subplot(111, label="1")  # "234" means "2x3 grid, 4th subplot".
+    s_plt2 = fig.add_subplot(111, label="2", frame_on=False)
 
+    s_plt1.plot(x, epsilons, color="C0")
+    s_plt1.set_xlabel("Training Steps", color="C0")
+    s_plt1.set_ylabel("Epsilon", color="C0")
+    s_plt1.tick_params(axis="x", color="C0")
+    s_plt1.tick_params(axis="y", color="C0")
 
-    print(state)
+    n = len(scores)
+    running_avg = np.empty(n)
+    for i in range(n):
+        running_avg[i] = np.mean(scores[max(0, i - 100):(i + 1)])
+
+    s_plt2.scatter(x, running_avg, color="C1")
+    s_plt2.axes.get_xaxis().set_visible(False)
+    s_plt2.yaxis.tick_right()
+    s_plt2.set_ylabel('Score', color="C1")
+    s_plt2.yaxis.set_label_position('right')
+    s_plt2.tick_params(axis='y', colors="C1")
+
+    plt.show()
+    # plt.savefig(filename)
 
 
 """

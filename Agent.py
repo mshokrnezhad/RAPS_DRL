@@ -6,7 +6,7 @@ from Memory import Memory
 
 class Agent(object):
     def __init__(self, GAMMA, EPSILON, LR, NUM_ACTIONS, INPUT_SHAPE, MEMORY_SIZE, BATCH_SIZE, EPSILON_MIN=0.01,
-                 EPSILON_DEC=5e-7, REPLACE_COUNTER=1000, ACTION_SPACE_NAME=None, CHECKPOINT_DIR='models'):
+                 EPSILON_DEC=5e-7, REPLACE_COUNTER=1000, CHECKPOINT_DIR='models'):
         self.GAMMA = GAMMA
         self.EPSILON = EPSILON
         self.LR = LR
@@ -16,13 +16,12 @@ class Agent(object):
         self.EPSILON_MIN = EPSILON_MIN
         self.EPSILON_DEC = EPSILON_DEC
         self.REPLACE_COUNTER = REPLACE_COUNTER
-        self.ACTION_SPACE_NAME = ACTION_SPACE_NAME
         self.CHECKPOINT_DIR = CHECKPOINT_DIR
         self.ACTION_SPACE = [i for i in range(self.NUM_ACTIONS)]
         self.learning_counter = 0
         self.memory = Memory(MEMORY_SIZE, INPUT_SHAPE, NUM_ACTIONS)
-        self.q_eval = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, self.ACTION_SPACE_NAME+"_q_eval", self.CHECKPOINT_DIR)
-        self.q_next = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, self.ACTION_SPACE_NAME+"_q_next", self.CHECKPOINT_DIR)
+        self.q_eval = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, "q_eval", self.CHECKPOINT_DIR)
+        self.q_next = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, "q_next", self.CHECKPOINT_DIR)
 
     def store_transition(self, state, action, reward, resulted_state, done):
         self.memory.store_transition(state, action, reward, resulted_state, done)
@@ -39,8 +38,8 @@ class Agent(object):
 
     def choose_action(self, state):
         if np.random.random() > self.EPSILON:
-            # state = T.tensor([state], dtype=T.float)
-            _, expected_values = self.q_eval.forward(state)
+            state = T.tensor([state], dtype=T.float)
+            expected_values = self.q_eval.forward(state)
             action = T.argmax(expected_values).item()
         else:
             action = np.random.choice(self.ACTION_SPACE)
@@ -66,21 +65,21 @@ class Agent(object):
         states, actions, rewards, resulted_states, dones = self.sample_memory()
         indexes = np.arange(self.BATCH_SIZE)
 
-        q_pred = self.q_eval.forward(states)[indexes, actions] # dims: batch_size * n_actions
+        q_pred = self.q_eval.forward(states)[indexes, actions]  # dims: batch_size * n_actions
         q_next = self.q_next.forward(resulted_states)
         q_eval = self.q_eval.forward(resulted_states)
 
         max_actions = T.argmax(q_eval, dim=1)
         q_next[dones] = 0.0
 
-        target = rewards + self.gamma * q_next[indexes, max_actions]
+        target = rewards + self.GAMMA * q_next[indexes, max_actions]
 
         loss = self.q_eval.loss(target, q_pred)
         loss.backward()
 
         self.q_eval.optimizer.step()
 
-        self.learn_step_counter += 1
+        self.learning_counter += 1
         self.decrement_epsilon()
 
     def save_models(self):

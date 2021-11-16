@@ -211,8 +211,8 @@ class CPLEX:
             parsed_solution = {}
             status = str(mdl.solve_details.status)
             raw_p = np.array([[1 if p[i, n].solution_value > 0 else 0
-                               for i in self.req_obj.REQUESTS] for n in self.net_obj.PRIORITIES])
-            raw_p = np.array([raw_p[:, i].argmax() for i in self.req_obj.REQUESTS])
+                               for i in range(self.req_obj.NUM_REQUESTS)] for n in self.net_obj.PRIORITIES])
+            raw_p = np.array([raw_p[:, i].argmax() for i in range(self.req_obj.NUM_REQUESTS)])
             parsed_p = {}
             parsed_req_flw = {}
             parsed_res_flw = {}

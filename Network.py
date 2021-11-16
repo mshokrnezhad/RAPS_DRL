@@ -243,13 +243,14 @@ class Network:
         arr1 = np.concatenate((self.DC_CAPACITIES, self.DC_COSTS))
         arr2 = np.concatenate((arr1, self.LINK_BWS_MATRIX.reshape(1, -1)[0]))
         arr3 = np.concatenate((arr2, self.LINK_COSTS_MATRIX.reshape(1, -1)[0]))
-        arr4 = np.concatenate((arr3, self.LINK_DELAYS_MATRIX[1:][0].reshape(1, -1)[0]))
+        arr4 = np.concatenate((arr3, self.LINK_DELAYS_MATRIX[1:].reshape(1, -1)[0]))
 
         return arr4
 
     def update_state(self, action, result, req_obj):
 
-        req_id = np.where(req_obj.REQUESTS == action["req_id"])[0][0]
+        # req_id = np.where(req_obj.REQUESTS == action["req_id"])[0][0]
+        req_id = action["req_id"]
         node_id = action["node_id"]
         priority_level = result["p"][req_id]
 
