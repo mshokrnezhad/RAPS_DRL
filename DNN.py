@@ -20,12 +20,12 @@ class DNN(nn.Module):
     def forward(self, state):  # forward propagation includes defining layers
         out1 = F.relu(self.fc1(state))
         out2 = F.relu(self.fc2(out1))
-        out3 = self.out(out2)
+        out3 = self.fc3(out2)
 
         return out3
 
     def save_checkpoint(self):
-        print('Saving checkpoint...')
+        print(f'Saving {self.CHECKPOINT_FILE}...')
         T.save(self.state_dict(), self.CHECKPOINT_FILE)
 
     def load_checkpoint(self):

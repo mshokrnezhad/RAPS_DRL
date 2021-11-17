@@ -2,6 +2,7 @@ from Environment import Environment
 from Functions import parse_state, plot_learning_curve
 from Agent import Agent
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 NUM_NODES = 9
 NUM_REQUESTS = 5
@@ -10,11 +11,41 @@ NUM_SERVICES = 3
 env_obj = Environment(NUM_NODES, NUM_REQUESTS, NUM_SERVICES)
 best_score = -np.inf
 load_checkpoint = False
-n_games = 1
+n_games = 50
 
-agent = Agent(GAMMA=0.99, EPSILON=1.0, LR=0.0001, NUM_ACTIONS=(NUM_NODES-len(env_obj.net_obj.get_first_tier_nodes())),
+
+'''
+state = env_obj.get_state()
+print(state)
+scaler = MinMaxScaler(feature_range=(-1, 1))
+state2 = scaler.fit_transform(state.reshape(1, -1))
+print(state2.shape)
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+agent = Agent(GAMMA=0.99, EPSILON=0.1, LR=0.0001, NUM_ACTIONS=(NUM_NODES-len(env_obj.net_obj.get_first_tier_nodes())),
               INPUT_SHAPE=env_obj.get_state().size, MEMORY_SIZE=50000, BATCH_SIZE=32, EPSILON_MIN=0.1,
-              EPSILON_DEC=1e-5, REPLACE_COUNTER=10000, CHECKPOINT_DIR='models/')
+              EPSILON_DEC=1e-3, REPLACE_COUNTER=10000, NAME=str(NUM_NODES)+str(NUM_REQUESTS)+str(NUM_SERVICES),
+              CHECKPOINT_DIR='models/')
 
 if load_checkpoint:
     agent.load_models()

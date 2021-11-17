@@ -6,7 +6,7 @@ from Memory import Memory
 
 class Agent(object):
     def __init__(self, GAMMA, EPSILON, LR, NUM_ACTIONS, INPUT_SHAPE, MEMORY_SIZE, BATCH_SIZE, EPSILON_MIN=0.01,
-                 EPSILON_DEC=5e-7, REPLACE_COUNTER=1000, CHECKPOINT_DIR='models'):
+                 EPSILON_DEC=5e-7, REPLACE_COUNTER=1000, NAME="", CHECKPOINT_DIR='models/'):
         self.GAMMA = GAMMA
         self.EPSILON = EPSILON
         self.LR = LR
@@ -20,8 +20,8 @@ class Agent(object):
         self.ACTION_SPACE = [i for i in range(self.NUM_ACTIONS)]
         self.learning_counter = 0
         self.memory = Memory(MEMORY_SIZE, INPUT_SHAPE, NUM_ACTIONS)
-        self.q_eval = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, "q_eval", self.CHECKPOINT_DIR)
-        self.q_next = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, "q_next", self.CHECKPOINT_DIR)
+        self.q_eval = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, NAME+"_q_eval", self.CHECKPOINT_DIR)
+        self.q_next = DNN(LR, NUM_ACTIONS, INPUT_SHAPE, NAME+"_q_next", self.CHECKPOINT_DIR)
 
     def store_transition(self, state, action, reward, resulted_state, done):
         self.memory.store_transition(state, action, reward, resulted_state, done)
@@ -74,7 +74,7 @@ class Agent(object):
 
         target = rewards + self.GAMMA * q_next[indexes, max_actions]
 
-        loss = self.q_eval.loss(target, q_pred)
+        loss = self.q_eval.criterion(target, q_pred)
         loss.backward()
 
         self.q_eval.optimizer.step()

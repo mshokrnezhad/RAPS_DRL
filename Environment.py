@@ -47,3 +47,9 @@ class Environment:
     def reset(self, SEED):
         self.req_obj = Request(self.NUM_REQUESTS, SEED)
         self.REQUESTS_ENTRY_NODES = specify_requests_entry_nodes(self.net_obj, self.req_obj, SEED)
+
+        self.net_obj = Network(self.NUM_NODES, 4)
+        self.srv_obj = Service(self.NUM_SERVICES, 4)
+        self.REQUESTED_SERVICES = assign_requests_to_services(self.srv_obj, self.req_obj, 1)
+        self.model_obj = CPLEX(self.net_obj, self.req_obj, self.srv_obj, self.REQUESTED_SERVICES,
+                               self.REQUESTS_ENTRY_NODES)
