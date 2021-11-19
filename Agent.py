@@ -36,13 +36,18 @@ class Agent(object):
 
         return states, actions, rewards, resulted_states, dones
 
-    def choose_action(self, state):
-        if np.random.random() > self.EPSILON:
-            state = T.tensor([state], dtype=T.float)
+    def choose_action(self, state, train_mode=True):
+        if train_mode:
+            if np.random.random() > self.EPSILON:
+                state = T.tensor([state], dtype=T.float)
+                expected_values = self.q_eval.forward(state)
+                action = T.argmax(expected_values).item()
+            else:
+                action = np.random.choice(self.ACTION_SPACE)
+        else:
+            state = T.tensor(state, dtype=T.float)  # state = T.tensor([state], dtype=T.float)
             expected_values = self.q_eval.forward(state)
             action = T.argmax(expected_values).item()
-        else:
-            action = np.random.choice(self.ACTION_SPACE)
 
         return action
 

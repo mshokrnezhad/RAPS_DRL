@@ -92,8 +92,8 @@ def plot_learning_curve(x, scores, epsilons, filename=""):
     s_plt2.yaxis.set_label_position('right')
     s_plt2.tick_params(axis='y', colors="C1")
 
-    plt.show()
-    # plt.savefig(filename)
+    # plt.show()
+    plt.savefig(filename)
 
 
 """

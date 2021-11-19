@@ -4,14 +4,16 @@ from Service import Service
 from Functions import specify_requests_entry_nodes, assign_requests_to_services
 from CPLEX import CPLEX
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 
 class Environment:
-    def __init__(self, NUM_NODES=9, NUM_REQUESTS=2, NUM_SERVICES=3):
+    def __init__(self, NUM_NODES=9, NUM_PRIORITY_LEVELS=1, NUM_REQUESTS=2, NUM_SERVICES=3):
         self.NUM_NODES = NUM_NODES
         self.NUM_REQUESTS = NUM_REQUESTS
         self.NUM_SERVICES = NUM_SERVICES
-        self.net_obj = Network(NUM_NODES, 4)
+        self.NUM_PRIORITY_LEVELS = NUM_PRIORITY_LEVELS
+        self.net_obj = Network(NUM_NODES, NUM_PRIORITY_LEVELS, 4)
         self.req_obj = Request(NUM_REQUESTS, 4)
         self.srv_obj = Service(NUM_SERVICES, 4)
         self.REQUESTS_ENTRY_NODES = specify_requests_entry_nodes(self.net_obj, self.req_obj, 0)
@@ -24,6 +26,10 @@ class Environment:
         req_state = self.req_obj.get_state()
         env_state = np.concatenate((req_state, net_state))
 
+        # scaler = MinMaxScaler(feature_range=(-1, 1))
+        # normalized_env_state = scaler.fit_transform(env_state.reshape(-1, 1))
+
+        # return normalized_env_state.reshape(1, -1)[0]
         return env_state
 
     def step(self, action):
@@ -48,7 +54,7 @@ class Environment:
         self.req_obj = Request(self.NUM_REQUESTS, SEED)
         self.REQUESTS_ENTRY_NODES = specify_requests_entry_nodes(self.net_obj, self.req_obj, SEED)
 
-        self.net_obj = Network(self.NUM_NODES, 4)
+        self.net_obj = Network(self.NUM_NODES, self.NUM_PRIORITY_LEVELS, 4)
         self.srv_obj = Service(self.NUM_SERVICES, 4)
         self.REQUESTED_SERVICES = assign_requests_to_services(self.srv_obj, self.req_obj, 1)
         self.model_obj = CPLEX(self.net_obj, self.req_obj, self.srv_obj, self.REQUESTED_SERVICES,

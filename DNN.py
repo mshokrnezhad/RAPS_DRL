@@ -4,6 +4,7 @@ import torch.optim as opt
 import torch as T
 import os
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 
 class DNN(nn.Module):
@@ -29,5 +30,5 @@ class DNN(nn.Module):
         T.save(self.state_dict(), self.CHECKPOINT_FILE)
 
     def load_checkpoint(self):
-        print('Loading checkpoint ...')
+        print(f'Loading {self.CHECKPOINT_FILE}...')
         self.load_state_dict(T.load(self.CHECKPOINT_FILE))

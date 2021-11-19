@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
 
 class Memory(object):
@@ -13,6 +14,8 @@ class Memory(object):
 
     def store_transition(self, state, action, reward, resulted_state, done):
         index = self.counter % self.MEMORY_SIZE
+
+
         self.state_memory[index] = state
         self.resulted_state_memory[index] = resulted_state
         self.action_memory[index] = action
